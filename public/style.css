@@ -1,0 +1,226 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  /* Soft, delicate, ethereal gradient for "Divina Luz" */
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  background-image: linear-gradient(to top, #fff1eb 0%, #093e57 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #4a4a4a;
+  padding: 10px;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.form-box {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 55px 25px 25px 25px;
+  border-radius: 25px; /* Mais redondinho */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 
+              inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.logo {
+  max-width: 140px;
+  max-height: 100px;
+  height: auto;
+  object-fit: contain;
+}
+
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #1e3e62;
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+.input-group {
+  margin-bottom: 22px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  margin-left: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #2c4a6f;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 20px;
+  border: 2px solid transparent;
+  border-radius: 25px; /* Inputs redondinhos */
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  color: #4a4a4a;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.input-group input:focus {
+  border-color: #2a5298;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: 0 4px 12px rgba(42, 82, 152, 0.15);
+}
+
+.input-group input.invalid {
+  border-color: #e57373;
+  box-shadow: 0 4px 10px rgba(229, 115, 115, 0.15);
+}
+
+.input-group input.invalid:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.25);
+}
+
+.error-message {
+  display: block;
+  color: #d32f2f;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-left: 12px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-group input::placeholder {
+  color: #9cb3c9;
+  font-weight: 300;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 50px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+  opacity: 0.7;
+}
+
+.toggle-password svg {
+  pointer-events: none;
+  display: block;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px 20px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+  color: white;
+  border: none;
+  border-radius: 20px; /* Botões redondinhos */
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(30, 60, 114, 0.25);
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, #1e3c72 0%, #122548 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(30, 60, 114, 0.35);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(30, 60, 114, 0.25);
+}
+
+.switch-link {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #5a738e;
+}
+
+.switch-link a {
+  color: #1e3e62;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.switch-link a:hover {
+  color: #122548;
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 15px;
+  display: none; /* Hide by default, we will toggle in JS if needed, but it works without it */
+}
+
+.message:not(:empty) {
+  display: block;
+}
+
+.message.error {
+  background-color: rgba(255, 235, 238, 0.8);
+  color: #e57373;
+  border: 1px solid #ffcdd2;
+}
+
+.message.success {
+  background-color: rgba(232, 245, 233, 0.8);
+  color: #81c784;
+  border: 1px solid #c8e6c9;
+}
