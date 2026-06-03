@@ -16,7 +16,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'divina_luz_secret_key';
 
 // Middlewares
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
 // Rota POST /api/register
 app.post('/api/register', async (req, res, next) => {
