@@ -80,5 +80,5 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`running on http://localhost:${PORT}`);
 });
