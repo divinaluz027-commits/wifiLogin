@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const messageEl = document.getElementById('loginMessage');
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
       
       // Executa validação customizada
       if (!validateForm(loginForm)) {
@@ -144,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageEl.className = 'message error';
         return;
       }
+
+      submitBtn.classList.add('loading');
 
       const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
@@ -171,10 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
             liberarInternetNoRoteador(email, senha);
           }, 1500);
         } else {
+          submitBtn.classList.remove('loading');
           messageEl.textContent = data.error || 'Erro ao fazer login.';
           messageEl.className = 'message error';
         }
       } catch (error) {
+        submitBtn.classList.remove('loading');
         messageEl.textContent = 'Erro de conexão.';
         messageEl.className = 'message error';
       }
@@ -185,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const messageEl = document.getElementById('registerMessage');
+      const submitBtn = registerForm.querySelector('button[type="submit"]');
 
       // Executa validação customizada
       if (!validateForm(registerForm)) {
@@ -192,6 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageEl.className = 'message error';
         return;
       }
+
+      submitBtn.classList.add('loading');
 
       const nome = document.getElementById('nome').value;
       const email = document.getElementById('email').value;
@@ -202,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const ipAddress = sessionStorage.getItem('hotspot_ip') || null;
 
       if (senha !== confirmaSenha) {
+        submitBtn.classList.remove('loading');
         const senhaInput = document.getElementById('senha');
         const confirmaSenhaInput = document.getElementById('confirmaSenha');
         
@@ -267,10 +276,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
           registerForm.reset();
         } else {
+          submitBtn.classList.remove('loading');
           messageEl.textContent = data.error || 'Erro ao cadastrar.';
           messageEl.className = 'message error';
         }
       } catch (error) {
+        submitBtn.classList.remove('loading');
         messageEl.textContent = 'Erro de conexão.';
         messageEl.className = 'message error';
       }
