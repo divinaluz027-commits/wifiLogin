@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         const data = await response.json();
+        submitBtn.classList.remove('loading');
         
         if (response.ok) {
           messageEl.textContent = 'Login bem-sucedido! Conectando à rede...';
@@ -180,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
             liberarInternetNoRoteador(email, telefone);
           }, 1500);
         } else {
-          submitBtn.classList.remove('loading');
           messageEl.textContent = data.error || 'Erro ao fazer login.';
           messageEl.className = 'message error';
         }
@@ -223,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         const data = await response.json();
+        submitBtn.classList.remove('loading');
         
         if (response.ok) {
           messageEl.textContent = 'Cadastro realizado com sucesso! Conectando à rede...';
@@ -235,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
           registerForm.reset();
         } else {
-          submitBtn.classList.remove('loading');
           messageEl.textContent = data.error || 'Erro ao cadastrar.';
           messageEl.className = 'message error';
         }
