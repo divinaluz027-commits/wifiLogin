@@ -86,7 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
       let errorMessage = '';
 
       // Validação de campo obrigatório
-      if (input.hasAttribute('required') && !input.value.trim()) {
+      if (input.type === 'checkbox') {
+        if (input.hasAttribute('required') && !input.checked) {
+          isFieldValid = false;
+          errorMessage = 'Você precisa aceitar os termos para continuar.';
+        }
+      } else if (input.hasAttribute('required') && !input.value.trim()) {
         isFieldValid = false;
         errorMessage = 'Por favor, preencha este campo.';
       }
@@ -128,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       
       input.addEventListener('input', cleanError);
+      input.addEventListener('change', cleanError);
     });
     
     return isValid;
@@ -149,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.classList.add('loading');
 
       const email = document.getElementById('email').value;
-      const senha = document.getElementById('senha').value;
+      const telefone = document.getElementById('telefone').value;
       const macAddress = sessionStorage.getItem('hotspot_mac') || null;
       const ipAddress = sessionStorage.getItem('hotspot_ip') || null;
       
@@ -159,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ email, senha, macAddress, ipAddress })
+          body: JSON.stringify({ email, telefone, macAddress, ipAddress })
         });
         
         const data = await response.json();
@@ -171,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           // Tenta liberar a internet do usuário no roteador Wi-Fi
           setTimeout(() => {
-            liberarInternetNoRoteador(email, senha);
+            liberarInternetNoRoteador(email, telefone);
           }, 1500);
         } else {
           submitBtn.classList.remove('loading');
@@ -204,55 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const nome = document.getElementById('nome').value;
       const email = document.getElementById('email').value;
       const telefone = document.getElementById('telefone').value;
-      const senha = document.getElementById('senha').value;
-      const confirmaSenha = document.getElementById('confirmaSenha').value;
       const macAddress = sessionStorage.getItem('hotspot_mac') || null;
       const ipAddress = sessionStorage.getItem('hotspot_ip') || null;
-
-      if (senha !== confirmaSenha) {
-        submitBtn.classList.remove('loading');
-        const senhaInput = document.getElementById('senha');
-        const confirmaSenhaInput = document.getElementById('confirmaSenha');
-        
-        senhaInput.classList.add('invalid');
-        confirmaSenhaInput.classList.add('invalid');
-
-        // Remove erros antigos antes de adicionar
-        const err1 = senhaInput.closest('.input-group').querySelector('.error-message');
-        if (err1) err1.remove();
-        const err2 = confirmaSenhaInput.closest('.input-group').querySelector('.error-message');
-        if (err2) err2.remove();
-
-        // Adiciona texto de aviso para as senhas incompatíveis
-        const errorSpan1 = document.createElement('span');
-        errorSpan1.className = 'error-message';
-        errorSpan1.textContent = 'As senhas não coincidem.';
-        senhaInput.closest('.input-group').appendChild(errorSpan1);
-
-        const errorSpan2 = document.createElement('span');
-        errorSpan2.className = 'error-message';
-        errorSpan2.textContent = 'As senhas não coincidem.';
-        confirmaSenhaInput.closest('.input-group').appendChild(errorSpan2);
-
-        // Limpa erros ao digitar novamente
-        const clean1 = () => {
-          senhaInput.classList.remove('invalid');
-          const err = senhaInput.closest('.input-group').querySelector('.error-message');
-          if (err) err.remove();
-        };
-        const clean2 = () => {
-          confirmaSenhaInput.classList.remove('invalid');
-          const err = confirmaSenhaInput.closest('.input-group').querySelector('.error-message');
-          if (err) err.remove();
-        };
-        
-        senhaInput.addEventListener('input', clean1);
-        confirmaSenhaInput.addEventListener('input', clean2);
-
-        messageEl.textContent = 'As senhas não coincidem.';
-        messageEl.className = 'message error';
-        return;
-      }
       
       try {
         const response = await fetch('/api/register', {
@@ -260,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ nome, email, telefone, senha, confirmaSenha, macAddress, ipAddress })
+          body: JSON.stringify({ nome, email, telefone, macAddress, ipAddress })
         });
         
         const data = await response.json();
@@ -271,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           // Libera a internet no roteador automaticamente após cadastrar
           setTimeout(() => {
-            liberarInternetNoRoteador(email, senha);
+            liberarInternetNoRoteador(email, telefone);
           }, 1500);
 
           registerForm.reset();
@@ -287,25 +246,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // Lógica para mostrar/ocultar senha
-  const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-  
-  togglePasswordButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const input = button.parentElement.querySelector('input');
-      const eyeOpen = button.querySelector('.eye-open');
-      const eyeClosed = button.querySelector('.eye-closed');
-      
-      if (input.type === 'password') {
-        input.type = 'text';
-        eyeOpen.style.display = 'none';
-        eyeClosed.style.display = 'block';
-      } else {
-        input.type = 'password';
-        eyeOpen.style.display = 'block';
-        eyeClosed.style.display = 'none';
-      }
-    });
-  });
 });

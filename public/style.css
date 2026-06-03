@@ -254,3 +254,45 @@ body {
   color: #81c784;
   border: 1px solid #c8e6c9;
 }
+
+/* Estilos para o checkbox de termos de uso */
+.input-group.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  margin-left: 10px;
+}
+
+.input-group.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.input-group.checkbox-group input[type="checkbox"]:focus {
+  box-shadow: 0 0 5px rgba(42, 82, 152, 0.4);
+}
+
+.input-group.checkbox-group label {
+  display: inline;
+  margin: 0;
+  font-size: 14px;
+  color: #2c4a6f;
+  cursor: pointer;
+}
+
+.input-group.checkbox-group label a {
+  color: #1e3e62;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.input-group.checkbox-group label a:hover {
+  color: #122548;
+}

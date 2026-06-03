@@ -21,9 +21,9 @@ app.use(express.json());
 // Rota POST /api/register
 app.post('/api/register', async (req, res, next) => {
   try {
-    const { nome, email, telefone, senha, macAddress, ipAddress } = req.body;
+    const { nome, email, telefone, macAddress, ipAddress } = req.body;
 
-    if (!nome || !email || !telefone || !senha) {
+    if (!nome || !email || !telefone) {
       return res.status(400).json({ error: 'Preencha todos os campos obrigatórios.' });
     }
 
@@ -36,17 +36,12 @@ app.post('/api/register', async (req, res, next) => {
       return res.status(400).json({ error: 'Este e-mail já está cadastrado.' });
     }
 
-    // Hashing da senha
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(senha, saltRounds);
-
     // Cria o usuário no banco MySQL
     const user = await prisma.user.create({
       data: {
         nome,
         email,
         telefone,
-        senha: hashedPassword,
         macAddress: macAddress || null,
         ipAddress: ipAddress || null,
       },
@@ -64,10 +59,10 @@ app.post('/api/register', async (req, res, next) => {
 // Rota POST /api/login
 app.post('/api/login', async (req, res, next) => {
   try {
-    const { email, senha } = req.body;
+    const { email, telefone } = req.body;
 
-    if (!email || !senha) {
-      return res.status(400).json({ error: 'Preencha e-mail e senha.' });
+    if (!email || !telefone) {
+      return res.status(400).json({ error: 'Preencha e-mail e telefone.' });
     }
 
     // Busca usuário no banco remoto
@@ -76,13 +71,12 @@ app.post('/api/login', async (req, res, next) => {
     });
 
     if (!user) {
-      return res.status(400).json({ error: 'E-mail ou senha incorretos.' });
+      return res.status(400).json({ error: 'E-mail ou telefone incorretos.' });
     }
 
-    // Validação da senha hashada
-    const isPasswordValid = await bcrypt.compare(senha, user.senha);
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: 'E-mail ou senha incorretos.' });
+    // Validação do telefone
+    if (user.telefone !== telefone) {
+      return res.status(400).json({ error: 'E-mail ou telefone incorretos.' });
     }
 
     // Geração do token JWT
