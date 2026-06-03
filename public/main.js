@@ -147,6 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
+      const macAddress = sessionStorage.getItem('hotspot_mac') || null;
+      const ipAddress = sessionStorage.getItem('hotspot_ip') || null;
       
       try {
         const response = await fetch('/api/login', {
@@ -154,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ email, senha })
+          body: JSON.stringify({ email, senha, macAddress, ipAddress })
         });
         
         const data = await response.json();
@@ -196,6 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const telefone = document.getElementById('telefone').value;
       const senha = document.getElementById('senha').value;
       const confirmaSenha = document.getElementById('confirmaSenha').value;
+      const macAddress = sessionStorage.getItem('hotspot_mac') || null;
+      const ipAddress = sessionStorage.getItem('hotspot_ip') || null;
 
       if (senha !== confirmaSenha) {
         const senhaInput = document.getElementById('senha');
@@ -247,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ nome, email, telefone, senha, confirmaSenha })
+          body: JSON.stringify({ nome, email, telefone, senha, confirmaSenha, macAddress, ipAddress })
         });
         
         const data = await response.json();

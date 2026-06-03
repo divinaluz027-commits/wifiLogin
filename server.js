@@ -4,81 +4,130 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const path = require('path');
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ['error', 'warn'],
+  errorFormat: 'minimal',
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'divina_luz_secret_key';
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Cadastro
-app.post('/api/register', async (req, res) => {
-  const { nome, email, telefone, senha, confirmaSenha } = req.body;
-
-  if (!nome || !email || !senha || !confirmaSenha) {
-    return res.status(400).json({ error: 'Preencha todos os campos obrigatórios.' });
-  }
-
-  if (senha !== confirmaSenha) {
-    return res.status(400).json({ error: 'As senhas não coincidem.' });
-  }
-
+// Rota POST /api/register
+app.post('/api/register', async (req, res, next) => {
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email já cadastrado.' });
+    const { nome, email, telefone, senha, macAddress, ipAddress } = req.body;
+
+    if (!nome || !email || !telefone || !senha) {
+      return res.status(400).json({ error: 'Preencha todos os campos obrigatórios.' });
     }
 
-    const hashedPassword = await bcrypt.hash(senha, 10);
+    // Verifica e-mail existente
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
 
+    if (existingUser) {
+      return res.status(400).json({ error: 'Este e-mail já está cadastrado.' });
+    }
+
+    // Hashing da senha
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(senha, saltRounds);
+
+    // Cria o usuário no banco MySQL
     const user = await prisma.user.create({
       data: {
         nome,
         email,
         telefone,
-        senha: hashedPassword
-      }
+        senha: hashedPassword,
+        macAddress: macAddress || null,
+        ipAddress: ipAddress || null,
+      },
     });
 
-    res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
+    return res.status(201).json({
+      message: 'Usuário cadastrado com sucesso!',
+      userId: user.id,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro interno do servidor.' });
+    next(error);
   }
 });
 
-// Login
-app.post('/api/login', async (req, res) => {
-  const { email, senha } = req.body;
-
-  if (!email || !senha) {
-    return res.status(400).json({ error: 'Preencha email e senha.' });
-  }
-
+// Rota POST /api/login
+app.post('/api/login', async (req, res, next) => {
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+      return res.status(400).json({ error: 'Preencha e-mail e senha.' });
+    }
+
+    // Busca usuário no banco remoto
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
     if (!user) {
-      return res.status(400).json({ error: 'Email ou senha incorretos.' });
+      return res.status(400).json({ error: 'E-mail ou senha incorretos.' });
     }
 
-    const isMatch = await bcrypt.compare(senha, user.senha);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Email ou senha incorretos.' });
+    // Validação da senha hashada
+    const isPasswordValid = await bcrypt.compare(senha, user.senha);
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'E-mail ou senha incorretos.' });
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    // Geração do token JWT
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: '24h',
+    });
 
-    res.json({ message: 'Login realizado com sucesso!', token });
+    return res.status(200).json({
+      message: 'Login realizado com sucesso!',
+      token,
+      user: {
+        id: user.id,
+        nome: user.nome,
+        email: user.email,
+      },
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro interno do servidor.' });
+    next(error);
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`running on http://localhost:${PORT}`);
+// Tratamento global de erros (Evita crash de Serverless Functions da Vercel)
+app.use((err, req, res, next) => {
+  console.error('Erro Capturado no Middleware Global:', err);
+
+  // Erros específicos de conexão do Prisma / Banco de dados remoto legado
+  if (err.code && err.code.startsWith('P')) {
+    return res.status(503).json({
+      error: 'Serviço temporariamente indisponível. Falha na conexão com o banco de dados remoto.',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined,
+    });
+  }
+
+  return res.status(500).json({
+    error: 'Ocorreu um erro interno no servidor.',
+    details: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  });
 });
+
+// Inicialização do servidor (Usado para desenvolvimento local, Vercel usa o express exposto via app)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando localmente na porta ${PORT}`);
+  });
+}
+
+// Exporta a app para o builder do Vercel Serverless
+module.exports = app;

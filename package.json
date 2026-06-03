@@ -1,10 +1,11 @@
 {
   "name": "logincadastrodivinaluz",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Hotspot Wi-Fi Login/Cadastro Divina Luz",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,9 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
     "prisma": "^6.19.3"
   }
 }
