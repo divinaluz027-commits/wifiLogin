@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
           messageEl.textContent = 'Login bem-sucedido! Conectando à rede...';
           messageEl.className = 'message success';
-          localStorage.setItem('token', data.token);
+          // Token JWT agora é armazenado automaticamente via cookie HttpOnly (seguro contra XSS)
           
           // Tenta liberar a internet do usuário no roteador Wi-Fi
           setTimeout(() => {
